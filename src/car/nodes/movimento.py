@@ -27,7 +27,7 @@ class Movimento:
 
     def direcaoLado(self, posicaoCarro , distancia):
         if(abs(distancia) > 3.0):
-            posicaoCarroVerde = posicaoCarro - distancia
+            posicaoCarroVerde = posicaoCarro + distancia
             if(posicaoCarroVerde < posicaoCarro):
              return 0 - 1.5
             else:
@@ -37,7 +37,7 @@ class Movimento:
 
     def direcaoFrente(self, posicaoCarro , distancia):
         if(abs(distancia) > 3.0):
-            posicaoCarroVerde = posicaoCarro - distancia
+            posicaoCarroVerde = posicaoCarro + distancia
             if(posicaoCarroVerde > posicaoCarro):
              return 1.5
             else:
