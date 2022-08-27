@@ -17,7 +17,7 @@ class Movimento:
 
     def posicaoCarro(self,odom):
 
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(100)
 
         self.posicaoCarro.point.x = odom.pose.pose.position.x
         self.posicaoCarro.point.y = odom.pose.pose.position.y
@@ -25,19 +25,29 @@ class Movimento:
 
         rate.sleep()
 
-    def direcao(self, posicao , distancia):
-        if(abs(distancia) > 5.0):
-            posicaoCarroVerde = posicao + distancia
-            if(posicaoCarroVerde < 0.0):
-             return 0 - 1.0
-            else:
+    def direcaoLado(self, posicaoCarro , distancia):
+        if(abs(distancia) > 3.0):
+            posicaoCarroVerde = posicaoCarro - distancia
+            if(posicaoCarroVerde > posicaoCarro):
              return 1.0
+            else:
+             return 0 - 1.0
+        else:
+            return 0.0
+
+    def direcaoFrente(self, posicaoCarro , distancia):
+        if(abs(distancia) > 3.0):
+            posicaoCarroVerde = posicaoCarro - distancia
+            if(posicaoCarroVerde > posicaoCarro):
+             return 1.0
+            else:
+             return 0 - 1.0
         else:
             return 0.0
 
     def rotacao(self, posicao, distancia):
-        if(abs(distancia) > 5.0):
-            posicaoCarroVerde = posicao + distancia
+        if(abs(distancia) > 3.0):
+            posicaoCarroVerde = posicao - distancia
             if(posicaoCarroVerde < 0.0):
              return 0 - 0.5
             else:
@@ -50,11 +60,11 @@ class Movimento:
 
     def movimentarCarro(self,sonar):
 
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(100)
 
         v = Twist()
-        v.linear.x = self.direcao(self.posicaoCarro.point.x, sonar.point.x)
-        v.linear.y = self.direcao(self.posicaoCarro.point.y, sonar.point.y)
+        v.linear.x = self.direcaoLado(self.posicaoCarro.point.x, sonar.point.x)
+        v.linear.y = self.direcaoFrente(self.posicaoCarro.point.y, sonar.point.y)
         v.linear.z = 0.0
 
         v.angular.x = 0.0
