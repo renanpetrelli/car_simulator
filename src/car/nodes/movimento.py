@@ -8,46 +8,36 @@ from nav_msgs.msg import Odometry
 class Movimento:
     def __init__(self):
         rospy.init_node('movimento_carro', anonymous=True)
-        rospy.Subscriber('odom_nemo', Odometry, self.posicaoCarroVerde)
-        rospy.Subscriber('sonar_data', PointStamped, self.posicaoRelativaEntreCarros)
-        rospy.Subscriber('odom', Odometry, self.posicaoAtual)
+        rospy.Subscriber('sonar_data', PointStamped, self.movimentarCarro)
         self.pubMovimentacao = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-        self.odomNemo = Odometry()
+        self.radar = PointStamped()
         self.posicaoRelativaCarros = PointStamped()
         self.odomCarro = Odometry()
 
-    def posicaoCarroVerde(self,odom):
+    def movimentarCarro(self,sonar):
 
-        rate = rospy.Rate(40)
-        self.odomNemo = odom
+        rate = rospy.Rate(10)
 
         v = Twist()
-        v.linear.x = odom.twist.twist.linear.x
-        v.linear.y = odom.twist.twist.linear.y
-        v.linear.z = odom.twist.twist.linear.z
+        v.linear.x = sonar.point.x
+        v.linear.y = sonar.point.y
+        v.linear.z = 0.0
 
-        v.angular.x = odom.twist.twist.angular.x
-        v.angular.y = odom.twist.twist.angular.y
-        v.angular.z = odom.twist.twist.angular.z
+        v.angular.x = 0.0
+        v.angular.y = 0.0
+
+        if(v.linear.x == sonar.point.x):
+         v.angular.z = 0.0
+        elif(int(v.linear.x) == int(sonar.point.x)):
+         v.linear.x = 0.0
+         v.linear.y = 0.0
+         v.angular.z = 180.0
+        else
+         v.angular.z = 0.0
 
         self.pubMovimentacao.publish(v)
         
         rate.sleep()
-
-    def posicaoAtual(self,odomCarro):
-
-        rate = rospy.Rate(10)
-        self.odomCarro = odomCarro
-
-        rate.sleep()
-
-    #Distância que o carro tem que percorrer
-    def posicaoRelativaEntreCarros(self,posicaoRelativa):
-        rate = rospy.Rate(5)
-        self.posicaoRelativaCarros = posicaoRelativa
-
-        rate.sleep()
-
 
 
 if __name__ == '__main__':
